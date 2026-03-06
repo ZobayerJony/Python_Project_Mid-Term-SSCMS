@@ -74,3 +74,6 @@ class SurvivorCase:
             return (date.today() - created).days
         except ValueError:
             return None
+
+
+# minor update for new git commit
