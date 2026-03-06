@@ -6,7 +6,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 from sscms.config import VALID_CASE_TYPES, VALID_PRIORITIES, VALID_STATUSES
-from sscms.ui.theme import font_h2, font_body
+from sscms.ui.theme import font_body
 from sscms.ui.widgets import SectionHeader
 
 
@@ -15,14 +15,13 @@ class CaseFormView(ctk.CTkFrame):
     Add/Edit form.
     - If app.selected_case_id is None -> Add mode
     - Else -> Edit mode
-    Also allows adding a follow-up note as an activity.
+    - Bottom action buttons stay visible
     """
 
     def __init__(self, master, app, **kwargs):
         super().__init__(master, corner_radius=16, **kwargs)
         self.app = app
 
-        # variables
         self.v_case_id = tk.StringVar(value="Auto")
         self.v_name = tk.StringVar()
         self.v_phone = tk.StringVar()
@@ -35,6 +34,9 @@ class CaseFormView(ctk.CTkFrame):
         self._build()
 
     def _build(self) -> None:
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
         self.header = SectionHeader(
             self,
             title="Add / Edit Case",
@@ -42,67 +44,66 @@ class CaseFormView(ctk.CTkFrame):
             right_text="Back to Cases",
             right_command=lambda: self.app.show_view("cases"),
         )
-        self.header.pack(fill="x", padx=14, pady=(14, 10))
+        self.header.grid(row=0, column=0, sticky="ew", padx=14, pady=(14, 10))
 
-        wrap = ctk.CTkFrame(self, corner_radius=14)
-        wrap.pack(fill="both", expand=True, padx=14, pady=(0, 14))
+        # Main body
+        body = ctk.CTkFrame(self, corner_radius=14)
+        body.grid(row=1, column=0, sticky="nsew", padx=14, pady=(0, 14))
+        body.grid_rowconfigure(0, weight=1)
+        body.grid_columnconfigure(0, weight=1)
 
-        grid = ctk.CTkFrame(wrap, corner_radius=14)
-        grid.pack(fill="both", expand=True, padx=14, pady=14)
-
-        grid.grid_columnconfigure(0, weight=1)
-        grid.grid_columnconfigure(1, weight=1)
-        grid.grid_rowconfigure(9, weight=1)
+        # Form area
+        form = ctk.CTkFrame(body, corner_radius=14)
+        form.grid(row=0, column=0, sticky="nsew", padx=14, pady=(14, 10))
+        form.grid_columnconfigure(0, weight=1)
+        form.grid_columnconfigure(1, weight=1)
 
         def label(text, r, c):
-            ctk.CTkLabel(grid, text=text, font=font_body()).grid(row=r, column=c, sticky="w", padx=12, pady=(12, 4))
+            ctk.CTkLabel(form, text=text, font=font_body()).grid(
+                row=r, column=c, sticky="w", padx=12, pady=(12, 4)
+            )
 
-        def entry(widget, r, c, colspan=1):
+        def put(widget, r, c, colspan=1):
             widget.grid(row=r, column=c, columnspan=colspan, sticky="ew", padx=12, pady=(0, 6))
 
-        # row 0
         label("Case ID", 0, 0)
-        self.e_id = ctk.CTkEntry(grid, textvariable=self.v_case_id, state="disabled")
-        entry(self.e_id, 1, 0)
+        self.e_id = ctk.CTkEntry(form, textvariable=self.v_case_id, state="disabled")
+        put(self.e_id, 1, 0)
 
         label("Incident Date (YYYY-MM-DD)", 0, 1)
-        self.e_incident = ctk.CTkEntry(grid, textvariable=self.v_incident, placeholder_text="YYYY-MM-DD")
-        entry(self.e_incident, 1, 1)
+        self.e_incident = ctk.CTkEntry(form, textvariable=self.v_incident, placeholder_text="YYYY-MM-DD")
+        put(self.e_incident, 1, 1)
 
-        # row 2
         label("Survivor Name *", 2, 0)
-        entry(ctk.CTkEntry(grid, textvariable=self.v_name, placeholder_text="Full name"), 3, 0)
+        put(ctk.CTkEntry(form, textvariable=self.v_name, placeholder_text="Full name"), 3, 0)
 
         label("Phone *", 2, 1)
-        entry(ctk.CTkEntry(grid, textvariable=self.v_phone, placeholder_text="Digits, +, -, spaces"), 3, 1)
+        put(ctk.CTkEntry(form, textvariable=self.v_phone, placeholder_text="Digits, +, -, spaces"), 3, 1)
 
-        # row 4
         label("Case Type *", 4, 0)
-        entry(ctk.CTkOptionMenu(grid, variable=self.v_type, values=list(VALID_CASE_TYPES)), 5, 0)
+        put(ctk.CTkOptionMenu(form, variable=self.v_type, values=list(VALID_CASE_TYPES)), 5, 0)
 
         label("Priority *", 4, 1)
-        entry(ctk.CTkOptionMenu(grid, variable=self.v_priority, values=list(VALID_PRIORITIES)), 5, 1)
+        put(ctk.CTkOptionMenu(form, variable=self.v_priority, values=list(VALID_PRIORITIES)), 5, 1)
 
-        # row 6
         label("Status *", 6, 0)
-        entry(ctk.CTkOptionMenu(grid, variable=self.v_status, values=list(VALID_STATUSES)), 7, 0)
+        put(ctk.CTkOptionMenu(form, variable=self.v_status, values=list(VALID_STATUSES)), 7, 0)
 
         label("Assigned Worker *", 6, 1)
-        entry(ctk.CTkEntry(grid, textvariable=self.v_worker, placeholder_text="Case worker name"), 7, 1)
+        put(ctk.CTkEntry(form, textvariable=self.v_worker, placeholder_text="Case worker name"), 7, 1)
 
-        # Notes + Follow-up
         label("Case Notes", 8, 0)
         label("Follow-up Note (adds to timeline)", 8, 1)
 
-        self.notes_box = ctk.CTkTextbox(grid, height=160, corner_radius=10)
+        self.notes_box = ctk.CTkTextbox(form, height=140, corner_radius=10)
         self.notes_box.grid(row=9, column=0, sticky="nsew", padx=12, pady=(0, 12))
 
-        self.follow_box = ctk.CTkTextbox(grid, height=160, corner_radius=10)
+        self.follow_box = ctk.CTkTextbox(form, height=140, corner_radius=10)
         self.follow_box.grid(row=9, column=1, sticky="nsew", padx=12, pady=(0, 12))
 
-        # Buttons
-        btns = ctk.CTkFrame(wrap, corner_radius=14)
-        btns.pack(fill="x", padx=14, pady=(0, 14))
+        # Fixed bottom button row
+        btns = ctk.CTkFrame(body, corner_radius=14)
+        btns.grid(row=1, column=0, sticky="ew", padx=14, pady=(0, 14))
 
         ctk.CTkButton(btns, text="Save", command=self._save).pack(side="left", padx=12, pady=12)
         ctk.CTkButton(btns, text="Reset", fg_color=("gray75", "gray30"), command=self._reset).pack(
@@ -112,11 +113,9 @@ class CaseFormView(ctk.CTkFrame):
 
         self._reset()
 
-    # ----- hooks -----
     def on_show(self) -> None:
         self._load_selected()
 
-    # ----- logic -----
     def _reset(self) -> None:
         self.app.set_selected_case(None)
         self.v_case_id.set("Auto")
@@ -134,7 +133,6 @@ class CaseFormView(ctk.CTkFrame):
     def _load_selected(self) -> None:
         cid = self.app.selected_case_id
         if cid is None:
-            # add mode
             self.v_case_id.set("Auto")
             self.follow_box.delete("1.0", "end")
             return
@@ -164,7 +162,6 @@ class CaseFormView(ctk.CTkFrame):
         notes = self.notes_box.get("1.0", "end").strip()
         follow = self.follow_box.get("1.0", "end").strip()
 
-        # EDIT mode
         if cid_text.isdigit():
             cid = int(cid_text)
             ok, msg = self.app.manager.update_case(
@@ -189,7 +186,6 @@ class CaseFormView(ctk.CTkFrame):
             self.app.show_view("cases")
             return
 
-        # ADD mode
         ok, msg, created = self.app.manager.add_case(
             survivor_name=self.v_name.get(),
             phone=self.v_phone.get(),
