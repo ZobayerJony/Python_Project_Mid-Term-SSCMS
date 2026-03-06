@@ -122,64 +122,68 @@ class LoginView(ctk.CTkFrame):
             right,
             corner_radius=24,
             fg_color=("#FFFFFF", "#0F172A"),
-            width=420,
-            height=520,
+            width=390,
+            height=560,
             border_width=1,
             border_color=("#DDE7F3", "#1E293B"),
         )
         card.place(relx=0.5, rely=0.5, anchor="center")
         card.pack_propagate(False)
 
-        top_space = ctk.CTkFrame(card, fg_color="transparent")
-        top_space.pack(fill="x", pady=(28, 0))
-
-        icon = ctk.CTkLabel(
+        ctk.CTkLabel(
             card,
             text="🔐",
-            font=ctk.CTkFont(size=34),
-        )
-        icon.pack(pady=(0, 10))
+            font=ctk.CTkFont(size=32),
+        ).pack(pady=(34, 10))
 
-        title = ctk.CTkLabel(
+        ctk.CTkLabel(
             card,
             text="Admin Login",
-            font=ctk.CTkFont(size=28, weight="bold"),
-        )
-        title.pack()
+            font=ctk.CTkFont(size=26, weight="bold"),
+        ).pack()
 
-        sub = ctk.CTkLabel(
+        ctk.CTkLabel(
             card,
             text="Sign in to access the SSCMS dashboard",
             text_color=("gray40", "gray70"),
             font=ctk.CTkFont(size=13),
-        )
-        sub.pack(pady=(8, 24))
+        ).pack(pady=(8, 22))
 
-        user_label = ctk.CTkLabel(card, text="Username", anchor="w", font=ctk.CTkFont(size=13, weight="bold"))
-        user_label.pack(fill="x", padx=34, pady=(0, 6))
+        # Username
+        ctk.CTkLabel(
+            card,
+            text="Username",
+            anchor="w",
+            font=ctk.CTkFont(size=13, weight="bold"),
+        ).pack(fill="x", padx=32, pady=(0, 6))
 
         self.username_entry = ctk.CTkEntry(
             card,
-            height=42,
+            height=38,
             textvariable=self.username_var,
             placeholder_text="Enter admin username",
-            corner_radius=12,
+            corner_radius=10,
         )
-        self.username_entry.pack(fill="x", padx=34, pady=(0, 16))
+        self.username_entry.pack(fill="x", padx=32, pady=(0, 16))
 
-        pass_label = ctk.CTkLabel(card, text="Password", anchor="w", font=ctk.CTkFont(size=13, weight="bold"))
-        pass_label.pack(fill="x", padx=34, pady=(0, 6))
+        # Password
+        ctk.CTkLabel(
+            card,
+            text="Password",
+            anchor="w",
+            font=ctk.CTkFont(size=13, weight="bold"),
+        ).pack(fill="x", padx=32, pady=(0, 6))
 
         pass_row = ctk.CTkFrame(card, fg_color="transparent")
-        pass_row.pack(fill="x", padx=34, pady=(0, 8))
+        pass_row.pack(fill="x", padx=32, pady=(0, 10))
 
         self.password_entry = ctk.CTkEntry(
             pass_row,
-            height=42,
+            height=38,
             textvariable=self.password_var,
             placeholder_text="Enter password",
             show="*",
-            corner_radius=12,
+            corner_radius=10,
         )
         self.password_entry.pack(side="left", fill="x", expand=True)
         self.password_entry.bind("<Return>", lambda _e: self._login())
@@ -187,15 +191,15 @@ class LoginView(ctk.CTkFrame):
         self.show_btn = ctk.CTkButton(
             pass_row,
             text="Show",
-            width=70,
-            height=42,
-            corner_radius=12,
+            width=68,
+            height=38,
+            corner_radius=10,
             command=self._toggle_password,
         )
-        self.show_btn.pack(side="left", padx=(10, 0))
+        self.show_btn.pack(side="left", padx=(8, 0))
 
         remember_row = ctk.CTkFrame(card, fg_color="transparent")
-        remember_row.pack(fill="x", padx=34, pady=(0, 18))
+        remember_row.pack(fill="x", padx=32, pady=(0, 16))
 
         remember = ctk.CTkCheckBox(
             remember_row,
@@ -205,28 +209,27 @@ class LoginView(ctk.CTkFrame):
         )
         remember.pack(side="left")
 
-        login_btn = ctk.CTkButton(
+        ctk.CTkButton(
             card,
             text="Login to Dashboard",
-            height=46,
-            corner_radius=14,
+            height=42,
+            corner_radius=12,
             font=ctk.CTkFont(size=15, weight="bold"),
             command=self._login,
-        )
-        login_btn.pack(fill="x", padx=34, pady=(4, 18))
+        ).pack(fill="x", padx=32, pady=(2, 18))
 
         demo_box = ctk.CTkFrame(
             card,
-            corner_radius=16,
+            corner_radius=14,
             fg_color=("#F3F7FB", "#111827"),
         )
-        demo_box.pack(fill="x", padx=34, pady=(0, 14))
+        demo_box.pack(fill="x", padx=32, pady=(0, 14))
 
         ctk.CTkLabel(
             demo_box,
             text="Demo Credentials",
             font=ctk.CTkFont(size=13, weight="bold"),
-        ).pack(anchor="w", padx=14, pady=(12, 4))
+        ).pack(anchor="w", padx=14, pady=(10, 4))
 
         ctk.CTkLabel(
             demo_box,
@@ -234,15 +237,14 @@ class LoginView(ctk.CTkFrame):
             justify="left",
             text_color=("gray35", "gray75"),
             font=ctk.CTkFont(size=12),
-        ).pack(anchor="w", padx=14, pady=(0, 12))
+        ).pack(anchor="w", padx=14, pady=(0, 10))
 
-        bottom_note = ctk.CTkLabel(
+        ctk.CTkLabel(
             card,
             text=APP_NAME,
             text_color=("gray45", "gray70"),
-            font=ctk.CTkFont(size=12),
-        )
-        bottom_note.pack(pady=(8, 0))
+            font=ctk.CTkFont(size=11),
+        ).pack(pady=(6, 0))
 
         self.username_entry.focus_set()
 
