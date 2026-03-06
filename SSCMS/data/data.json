@@ -1,5 +1,5 @@
 {
-  "next_id": 4,
+  "next_id": 5,
   "cases": [
     {
       "case_id": 1,
@@ -65,6 +65,25 @@
           "timestamp": "2026-03-06 13:01",
           "action": "Created",
           "detail": "Case created with status 'Open' and priority 'Urgent'."
+        }
+      ]
+    },
+    {
+      "case_id": 4,
+      "survivor_name": "Mohitun Begum",
+      "phone": "01789562356",
+      "case_type": "Protection",
+      "priority": "High",
+      "status": "Open",
+      "assigned_worker": "Ragib Islam",
+      "incident_date": "2026-03-06",
+      "created_at": "2026-03-06",
+      "notes": "",
+      "activities": [
+        {
+          "timestamp": "2026-03-06 13:16",
+          "action": "Created",
+          "detail": "Case created with status 'Open' and priority 'High'."
         }
       ]
     }

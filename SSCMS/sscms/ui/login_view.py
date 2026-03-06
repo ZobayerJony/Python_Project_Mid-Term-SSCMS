@@ -12,7 +12,7 @@ class LoginView(ctk.CTkFrame):
     """
     Professional admin login screen for SSCMS.
     Left side: branding / overview
-    Right side: login card
+    Right side: modern login card
     """
 
     def __init__(self, master, app, **kwargs):
@@ -123,7 +123,7 @@ class LoginView(ctk.CTkFrame):
             corner_radius=24,
             fg_color=("#FFFFFF", "#0F172A"),
             width=390,
-            height=560,
+            height=470,
             border_width=1,
             border_color=("#DDE7F3", "#1E293B"),
         )
@@ -149,7 +149,6 @@ class LoginView(ctk.CTkFrame):
             font=ctk.CTkFont(size=13),
         ).pack(pady=(8, 22))
 
-        # Username
         ctk.CTkLabel(
             card,
             text="Username",
@@ -166,7 +165,6 @@ class LoginView(ctk.CTkFrame):
         )
         self.username_entry.pack(fill="x", padx=32, pady=(0, 16))
 
-        # Password
         ctk.CTkLabel(
             card,
             text="Password",
@@ -199,7 +197,7 @@ class LoginView(ctk.CTkFrame):
         self.show_btn.pack(side="left", padx=(8, 0))
 
         remember_row = ctk.CTkFrame(card, fg_color="transparent")
-        remember_row.pack(fill="x", padx=32, pady=(0, 16))
+        remember_row.pack(fill="x", padx=32, pady=(0, 18))
 
         remember = ctk.CTkCheckBox(
             remember_row,
@@ -218,33 +216,12 @@ class LoginView(ctk.CTkFrame):
             command=self._login,
         ).pack(fill="x", padx=32, pady=(2, 18))
 
-        demo_box = ctk.CTkFrame(
-            card,
-            corner_radius=14,
-            fg_color=("#F3F7FB", "#111827"),
-        )
-        demo_box.pack(fill="x", padx=32, pady=(0, 14))
-
-        ctk.CTkLabel(
-            demo_box,
-            text="Demo Credentials",
-            font=ctk.CTkFont(size=13, weight="bold"),
-        ).pack(anchor="w", padx=14, pady=(10, 4))
-
-        ctk.CTkLabel(
-            demo_box,
-            text=f"Username: {ADMIN_USERNAME}\nPassword: {ADMIN_PASSWORD}",
-            justify="left",
-            text_color=("gray35", "gray75"),
-            font=ctk.CTkFont(size=12),
-        ).pack(anchor="w", padx=14, pady=(0, 10))
-
         ctk.CTkLabel(
             card,
             text=APP_NAME,
             text_color=("gray45", "gray70"),
             font=ctk.CTkFont(size=11),
-        ).pack(pady=(6, 0))
+        ).pack(pady=(8, 0))
 
         self.username_entry.focus_set()
 
