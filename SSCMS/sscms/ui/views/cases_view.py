@@ -13,11 +13,10 @@ from sscms.ui.widgets import SectionHeader
 class CasesView(ctk.CTkFrame):
     """
     Cases list view:
-    - Search box
-    - Filters
-    - Sort controls
-    - Table
-    - Actions: New/Edit/Details/Delete/Refresh
+    - Search by ID / name / phone / notes / worker
+    - Filter / sort
+    - If exact ID is searched, matching case is auto-selected and shown at top
+    - Clear restores full list
     """
 
     def __init__(self, master, app, **kwargs):
@@ -136,7 +135,7 @@ class CasesView(ctk.CTkFrame):
     def refresh(self) -> None:
         self._refresh_worker_values()
 
-        query = self.search_var.get()
+        query = self.search_var.get().strip()
         base = self.app.manager.search(query)
 
         filtered = self.app.manager.filter_cases(
@@ -153,11 +152,24 @@ class CasesView(ctk.CTkFrame):
             descending=bool(self.sort_desc.get()),
         )
 
+        exact_id_case = None
+        if query.isdigit():
+            search_id = int(query)
+            for case in sorted_cases:
+                if case.case_id == search_id:
+                    exact_id_case = case
+                    break
+
+            if exact_id_case is not None:
+                sorted_cases = [exact_id_case] + [c for c in sorted_cases if c.case_id != search_id]
+
         for item in self.tree.get_children():
             self.tree.delete(item)
 
+        selected_item_id = None
+
         for c in sorted_cases:
-            self.tree.insert(
+            item_id = self.tree.insert(
                 "",
                 "end",
                 values=(
@@ -172,8 +184,31 @@ class CasesView(ctk.CTkFrame):
                     c.created_at,
                 ),
             )
+            if exact_id_case is not None and c.case_id == exact_id_case.case_id:
+                selected_item_id = item_id
 
-        self.app.status.set_left(f"Cases: {len(sorted_cases)} shown / {len(self.app.manager.cases)} total")
+        if selected_item_id:
+            self.tree.selection_set(selected_item_id)
+            self.tree.focus(selected_item_id)
+            self.tree.see(selected_item_id)
+            self.app.set_selected_case(exact_id_case.case_id)
+            self.app.status.set_left(
+                f"Exact ID match found: Case #{exact_id_case.case_id} selected"
+            )
+        else:
+            if query and len(sorted_cases) == 1:
+                only_case = sorted_cases[0]
+                children = self.tree.get_children()
+                if children:
+                    self.tree.selection_set(children[0])
+                    self.tree.focus(children[0])
+                    self.tree.see(children[0])
+                    self.app.set_selected_case(only_case.case_id)
+            elif not sorted_cases:
+                self.app.set_selected_case(None)
+                self.app.status.set_left("No matching cases found")
+            else:
+                self.app.status.set_left(f"Cases: {len(sorted_cases)} shown / {len(self.app.manager.cases)} total")
 
     def focus_search(self) -> None:
         self.search_entry.focus_set()
@@ -203,6 +238,7 @@ class CasesView(ctk.CTkFrame):
         self.filter_worker.set("All")
         self.sort_key.set("ID")
         self.sort_desc.set(False)
+        self.app.set_selected_case(None)
         self.refresh()
 
     def _new_case(self) -> None:
