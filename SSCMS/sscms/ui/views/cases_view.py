@@ -15,12 +15,13 @@ class CasesView(ctk.CTkFrame):
     Cases list view:
     - Search by ID / name / phone / notes / worker
     - Filter / sort
-    - If exact ID is searched, matching case is auto-selected and shown at top
+    - Exact ID search auto-selects the matching case
     - Clear restores full list
+    - Dark professional table with separated rows
     """
 
     def __init__(self, master, app, **kwargs):
-        super().__init__(master, corner_radius=16, **kwargs)
+        super().__init__(master, corner_radius=16, fg_color=("#F4F7FB", "#1E1E1E"), **kwargs)
         self.app = app
 
         self.search_var = tk.StringVar(value="")
@@ -35,39 +36,50 @@ class CasesView(ctk.CTkFrame):
         self._build()
 
     def _build(self) -> None:
+        self._configure_treeview_style()
+
         header = SectionHeader(
             self,
             title="Cases",
             subtitle="Search, filter, sort and manage survivor support cases.",
             right_text="New Case",
             right_command=self._new_case,
+            fg_color=("#EDEFF3", "#2A2A2A"),
         )
         header.pack(fill="x", padx=14, pady=(14, 10))
 
-        bar = ctk.CTkFrame(self, corner_radius=14)
+        bar = ctk.CTkFrame(self, corner_radius=14, fg_color=("#EDEFF3", "#2A2A2A"))
         bar.pack(fill="x", padx=14, pady=(0, 10))
 
         self.search_entry = ctk.CTkEntry(
             bar,
             textvariable=self.search_var,
             placeholder_text="Search by ID / name / phone / notes / worker...",
+            height=38,
+            corner_radius=10,
         )
         self.search_entry.pack(side="left", fill="x", expand=True, padx=(12, 8), pady=12)
         self.search_entry.bind("<Return>", lambda _e: self.refresh())
 
-        ctk.CTkButton(bar, text="Search", command=self.refresh).pack(side="left", padx=8, pady=12)
-        ctk.CTkButton(bar, text="Clear", fg_color=("gray75", "gray30"), command=self._clear).pack(
+        ctk.CTkButton(bar, text="Search", command=self.refresh, width=150).pack(side="left", padx=8, pady=12)
+        ctk.CTkButton(bar, text="Clear", fg_color=("gray75", "gray30"), command=self._clear, width=120).pack(
             side="left", padx=(0, 12), pady=12
         )
 
-        row = ctk.CTkFrame(self, corner_radius=14)
+        row = ctk.CTkFrame(self, corner_radius=14, fg_color=("#EDEFF3", "#2A2A2A"))
         row.pack(fill="x", padx=14, pady=(0, 10))
 
         def dd(parent, title: str, var: tk.StringVar, values: list[str], width=150):
-            box = ctk.CTkFrame(parent, corner_radius=12)
+            box = ctk.CTkFrame(parent, corner_radius=12, fg_color=("#E6EAF0", "#333333"))
             box.pack(side="left", padx=10, pady=10)
             ctk.CTkLabel(box, text=title, font=font_body()).pack(anchor="w", padx=10, pady=(8, 2))
-            opt = ctk.CTkOptionMenu(box, variable=var, values=values, width=width, command=lambda _v: self.refresh())
+            opt = ctk.CTkOptionMenu(
+                box,
+                variable=var,
+                values=values,
+                width=width,
+                command=lambda _v: self.refresh()
+            )
             opt.pack(padx=10, pady=(0, 10))
             return opt
 
@@ -76,7 +88,7 @@ class CasesView(ctk.CTkFrame):
         dd(row, "Case Type", self.filter_type, ["All", *VALID_CASE_TYPES])
         self.worker_menu = dd(row, "Worker", self.filter_worker, ["All"], width=170)
 
-        sort_box = ctk.CTkFrame(row, corner_radius=12)
+        sort_box = ctk.CTkFrame(row, corner_radius=12, fg_color=("#E6EAF0", "#333333"))
         sort_box.pack(side="right", padx=10, pady=10)
         ctk.CTkLabel(sort_box, text="Sort", font=font_body()).pack(anchor="w", padx=10, pady=(8, 2))
         ctk.CTkOptionMenu(
@@ -90,15 +102,18 @@ class CasesView(ctk.CTkFrame):
             padx=10, pady=(0, 10)
         )
 
-        wrap = ctk.CTkFrame(self, corner_radius=14)
+        wrap = ctk.CTkFrame(self, corner_radius=14, fg_color=("#EDEFF3", "#2A2A2A"))
         wrap.pack(fill="both", expand=True, padx=14, pady=(0, 10))
 
+        table_holder = ctk.CTkFrame(wrap, corner_radius=12, fg_color=("#DCE3EC", "#252526"))
+        table_holder.pack(fill="both", expand=True, padx=12, pady=12)
+
         columns = ("ID", "Name", "Phone", "Type", "Priority", "Status", "Worker", "Incident", "Created")
-        self.tree = ttk.Treeview(wrap, columns=columns, show="headings", height=14)
+        self.tree = ttk.Treeview(table_holder, columns=columns, show="headings", height=14)
 
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=130 if col not in ("Name", "Worker") else 180, anchor="w")
+            self.tree.column(col, width=130 if col not in ("Name", "Worker") else 190, anchor="w")
 
         self.tree.column("ID", width=60, anchor="center")
         self.tree.column("Priority", width=95, anchor="center")
@@ -106,28 +121,66 @@ class CasesView(ctk.CTkFrame):
         self.tree.column("Incident", width=110, anchor="center")
         self.tree.column("Created", width=110, anchor="center")
 
-        vsb = ttk.Scrollbar(wrap, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=vsb.set)
+        vsb = ttk.Scrollbar(table_holder, orient="vertical", command=self.tree.yview)
+        hsb = ttk.Scrollbar(table_holder, orient="horizontal", command=self.tree.xview)
+        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
 
-        self.tree.pack(side="left", fill="both", expand=True, padx=(12, 0), pady=12)
-        vsb.pack(side="right", fill="y", padx=(0, 12), pady=12)
+        self.tree.pack(side="top", fill="both", expand=True, padx=(10, 0), pady=(10, 0))
+        hsb.pack(side="bottom", fill="x", padx=(10, 10), pady=(0, 10))
+        vsb.pack(side="right", fill="y", padx=(0, 10), pady=10)
 
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
         self.tree.bind("<Double-1>", lambda _e: self._open_details())
 
-        actions = ctk.CTkFrame(self, corner_radius=14)
+        actions = ctk.CTkFrame(self, corner_radius=14, fg_color=("#EDEFF3", "#2A2A2A"))
         actions.pack(fill="x", padx=14, pady=(0, 14))
 
-        ctk.CTkButton(actions, text="Details", command=self._open_details).pack(side="left", padx=12, pady=12)
-        ctk.CTkButton(actions, text="Edit", command=self._edit_selected).pack(side="left", padx=8, pady=12)
-        ctk.CTkButton(actions, text="Delete", fg_color="#B00020", command=self._delete_selected).pack(
+        ctk.CTkButton(actions, text="Details", command=self._open_details, width=150).pack(side="left", padx=12, pady=12)
+        ctk.CTkButton(actions, text="Edit", command=self._edit_selected, width=150).pack(side="left", padx=8, pady=12)
+        ctk.CTkButton(actions, text="Delete", fg_color="#B00020", command=self._delete_selected, width=150).pack(
             side="left", padx=8, pady=12
         )
-        ctk.CTkButton(actions, text="Refresh", fg_color=("gray75", "gray30"), command=self.refresh).pack(
+        ctk.CTkButton(actions, text="Refresh", fg_color=("gray75", "gray30"), command=self.refresh, width=150).pack(
             side="right", padx=12, pady=12
         )
 
         self.refresh()
+
+    def _configure_treeview_style(self) -> None:
+        style = ttk.Style()
+        try:
+            style.theme_use("clam")
+        except tk.TclError:
+            pass
+
+        style.configure(
+            "Treeview",
+            background="#202225",
+            foreground="#F3F4F6",
+            fieldbackground="#202225",
+            borderwidth=0,
+            rowheight=34,
+            font=("Segoe UI", 10),
+        )
+        style.map(
+            "Treeview",
+            background=[("selected", "#2563EB")],
+            foreground=[("selected", "#FFFFFF")],
+        )
+        style.configure(
+            "Treeview.Heading",
+            background="#2F3542",
+            foreground="#FFFFFF",
+            relief="flat",
+            borderwidth=0,
+            padding=(8, 8),
+            font=("Segoe UI", 10, "bold"),
+        )
+        style.map(
+            "Treeview.Heading",
+            background=[("active", "#3B4252")],
+            foreground=[("active", "#FFFFFF")],
+        )
 
     def on_show(self) -> None:
         self.refresh()
@@ -168,7 +221,8 @@ class CasesView(ctk.CTkFrame):
 
         selected_item_id = None
 
-        for c in sorted_cases:
+        for index, c in enumerate(sorted_cases):
+            tag = "evenrow" if index % 2 == 0 else "oddrow"
             item_id = self.tree.insert(
                 "",
                 "end",
@@ -183,18 +237,20 @@ class CasesView(ctk.CTkFrame):
                     c.incident_date,
                     c.created_at,
                 ),
+                tags=(tag,),
             )
             if exact_id_case is not None and c.case_id == exact_id_case.case_id:
                 selected_item_id = item_id
+
+        self.tree.tag_configure("evenrow", background="#1F2937", foreground="#F9FAFB")
+        self.tree.tag_configure("oddrow", background="#273449", foreground="#F9FAFB")
 
         if selected_item_id:
             self.tree.selection_set(selected_item_id)
             self.tree.focus(selected_item_id)
             self.tree.see(selected_item_id)
             self.app.set_selected_case(exact_id_case.case_id)
-            self.app.status.set_left(
-                f"Exact ID match found: Case #{exact_id_case.case_id} selected"
-            )
+            self.app.status.set_left(f"Exact ID match found: Case #{exact_id_case.case_id} selected")
         else:
             if query and len(sorted_cases) == 1:
                 only_case = sorted_cases[0]

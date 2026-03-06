@@ -1,5 +1,5 @@
 {
-  "next_id": 5,
+  "next_id": 6,
   "cases": [
     {
       "case_id": 1,
@@ -74,14 +74,53 @@
       "phone": "01789562356",
       "case_type": "Protection",
       "priority": "High",
-      "status": "Open",
+      "status": "In Progress",
       "assigned_worker": "Ragib Islam",
       "incident_date": "2026-03-06",
       "created_at": "2026-03-06",
       "notes": "",
       "activities": [
         {
+          "timestamp": "2026-03-06 19:16",
+          "action": "Follow-up",
+          "detail": "Status updated to 'In Progress'."
+        },
+        {
+          "timestamp": "2026-03-06 19:16",
+          "action": "Updated",
+          "detail": "Status: Open → In Progress"
+        },
+        {
           "timestamp": "2026-03-06 13:16",
+          "action": "Created",
+          "detail": "Case created with status 'Open' and priority 'High'."
+        }
+      ]
+    },
+    {
+      "case_id": 5,
+      "survivor_name": "Rimu",
+      "phone": "01789562356",
+      "case_type": "Medical",
+      "priority": "High",
+      "status": "Resolved",
+      "assigned_worker": "Nahid",
+      "incident_date": "2026-01-25",
+      "created_at": "2026-03-06",
+      "notes": "",
+      "activities": [
+        {
+          "timestamp": "2026-03-06 19:23",
+          "action": "Follow-up",
+          "detail": "Status updated to 'Resolved'."
+        },
+        {
+          "timestamp": "2026-03-06 19:23",
+          "action": "Updated",
+          "detail": "Status: Open → Resolved"
+        },
+        {
+          "timestamp": "2026-03-06 19:22",
           "action": "Created",
           "detail": "Case created with status 'Open' and priority 'High'."
         }
