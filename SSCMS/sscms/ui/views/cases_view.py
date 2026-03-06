@@ -78,7 +78,7 @@ class CasesView(ctk.CTkFrame):
                 variable=var,
                 values=values,
                 width=width,
-                command=lambda _v: self.refresh()
+                command=lambda _v: self.refresh(),
             )
             opt.pack(padx=10, pady=(0, 10))
             return opt
