@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import tkinter as tk
-from pathlib import Path
 from typing import Dict
 
 import customtkinter as ctk
@@ -13,7 +11,6 @@ from sscms.services import ExportService
 from sscms.ui.theme import apply_theme, font_body, font_title
 from sscms.ui.widgets import StatusBar
 
-# Views (তুমি views folder code বসালে এগুলো কাজ করবে)
 from sscms.ui.views.cases_view import CasesView
 from sscms.ui.views.case_form_view import CaseFormView
 from sscms.ui.views.case_detail_view import CaseDetailView
@@ -38,24 +35,18 @@ class SSCMSApp:
         self.root.geometry(DEFAULT_GEOMETRY)
         self.root.minsize(MIN_SIZE[0], MIN_SIZE[1])
 
-        # Core app state/services
         self.manager = CaseManager(JsonStore(DATA_FILE))
         self.export_service = ExportService()
 
-        # Selected Case
         self.selected_case_id: int | None = None
 
-        # Layout
         self._build_shell()
 
-        # Views
         self.views: Dict[str, ctk.CTkFrame] = {}
         self._init_views()
 
-        # Default view
         self.show_view("cases")
 
-        # Keyboard shortcuts
         self.root.bind("<Control-n>", lambda _e: self._shortcut_new_case())
         self.root.bind("<Control-f>", lambda _e: self._shortcut_focus_search())
         self.root.bind("<F5>", lambda _e: self.refresh_all())
@@ -68,27 +59,24 @@ class SSCMSApp:
         self.root.grid_columnconfigure(1, weight=1)
         self.root.grid_rowconfigure(0, weight=1)
 
-        # Sidebar
         self.sidebar = ctk.CTkFrame(self.root, corner_radius=16, width=260)
         self.sidebar.grid(row=0, column=0, sticky="nsw", padx=(14, 10), pady=14)
         self.sidebar.grid_rowconfigure(10, weight=1)
 
-        # Content
         self.content = ctk.CTkFrame(self.root, corner_radius=16)
         self.content.grid(row=0, column=1, sticky="nsew", padx=(0, 14), pady=14)
         self.content.grid_rowconfigure(0, weight=1)
         self.content.grid_columnconfigure(0, weight=1)
 
-        # Status bar
         self.status = StatusBar(self.root, corner_radius=16)
         self.status.grid(row=1, column=0, columnspan=2, sticky="ew", padx=14, pady=(0, 14))
 
         self._build_sidebar_items()
 
     def _build_sidebar_items(self) -> None:
-        # Branding
         brand = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         brand.grid(row=0, column=0, sticky="ew", padx=12, pady=(14, 8))
+
         ctk.CTkLabel(brand, text="SSCMS", font=font_title()).pack(anchor="w")
         ctk.CTkLabel(
             brand,
@@ -98,11 +86,10 @@ class SSCMSApp:
             justify="left",
         ).pack(anchor="w", pady=(2, 0))
 
-        # Nav Buttons
         self.btn_cases = ctk.CTkButton(self.sidebar, text="Cases", command=lambda: self.show_view("cases"))
         self.btn_cases.grid(row=1, column=0, sticky="ew", padx=12, pady=(8, 6))
 
-        self.btn_new = ctk.CTkButton(self.sidebar, text="Add / Edit Case", command=lambda: self.show_view("form"))
+        self.btn_new = ctk.CTkButton(self.sidebar, text="Add / Edit Case", command=lambda: self._open_new_case_form())
         self.btn_new.grid(row=2, column=0, sticky="ew", padx=12, pady=6)
 
         self.btn_detail = ctk.CTkButton(self.sidebar, text="Case Details", command=lambda: self.show_view("detail"))
@@ -114,13 +101,12 @@ class SSCMSApp:
         self.btn_export = ctk.CTkButton(self.sidebar, text="Export (CSV)", command=lambda: self.show_view("export"))
         self.btn_export.grid(row=5, column=0, sticky="ew", padx=12, pady=6)
 
-        # Spacer
         spacer = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         spacer.grid(row=10, column=0, sticky="nsew")
 
-        # Help text
         help_box = ctk.CTkFrame(self.sidebar, corner_radius=14)
         help_box.grid(row=11, column=0, sticky="ew", padx=12, pady=(0, 12))
+
         ctk.CTkLabel(help_box, text="Shortcuts", font=font_body()).pack(anchor="w", padx=12, pady=(10, 2))
         ctk.CTkLabel(
             help_box,
@@ -132,7 +118,6 @@ class SSCMSApp:
 
     # ---------------- Views ----------------
     def _init_views(self) -> None:
-        # Create views inside content frame
         self.views["cases"] = CasesView(self.content, app=self)
         self.views["form"] = CaseFormView(self.content, app=self)
         self.views["detail"] = CaseDetailView(self.content, app=self)
@@ -145,9 +130,9 @@ class SSCMSApp:
     def show_view(self, name: str) -> None:
         if name not in self.views:
             return
+
         self.views[name].tkraise()
 
-        # Notify view it became active (optional method)
         view = self.views[name]
         on_show = getattr(view, "on_show", None)
         if callable(on_show):
@@ -164,18 +149,23 @@ class SSCMSApp:
             self.status.set_right(f"Selected Case ID: {case_id}")
 
     def refresh_all(self) -> None:
-        # call refresh on views if they implement it
-        for key, view in self.views.items():
+        for _, view in self.views.items():
             refresh = getattr(view, "refresh", None)
             if callable(refresh):
                 refresh()
         self.status.set_left("Refreshed")
 
-    # ---------------- Shortcuts ----------------
-    def _shortcut_new_case(self) -> None:
+    def _open_new_case_form(self) -> None:
         self.set_selected_case(None)
+        form_view = self.views.get("form")
+        if form_view and hasattr(form_view, "_reset"):
+            form_view._reset()
         self.show_view("form")
         self.status.set_left("New case mode")
+
+    # ---------------- Shortcuts ----------------
+    def _shortcut_new_case(self) -> None:
+        self._open_new_case_form()
 
     def _shortcut_focus_search(self) -> None:
         view = self.views.get("cases")
@@ -183,5 +173,6 @@ class SSCMSApp:
             return
         focus_search = getattr(view, "focus_search", None)
         if callable(focus_search):
+            self.show_view("cases")
             focus_search()
             self.status.set_left("Search focused")

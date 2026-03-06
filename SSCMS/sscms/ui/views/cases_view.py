@@ -6,7 +6,7 @@ from tkinter import messagebox, ttk
 import customtkinter as ctk
 
 from sscms.config import VALID_CASE_TYPES, VALID_PRIORITIES, VALID_STATUSES
-from sscms.ui.theme import font_h2, font_body
+from sscms.ui.theme import font_body
 from sscms.ui.widgets import SectionHeader
 
 
@@ -14,9 +14,9 @@ class CasesView(ctk.CTkFrame):
     """
     Cases list view:
     - Search box
-    - Filters (status/priority/type/worker)
+    - Filters
     - Sort controls
-    - Table (Treeview)
+    - Table
     - Actions: New/Edit/Details/Delete/Refresh
     """
 
@@ -24,7 +24,6 @@ class CasesView(ctk.CTkFrame):
         super().__init__(master, corner_radius=16, **kwargs)
         self.app = app
 
-        # state
         self.search_var = tk.StringVar(value="")
         self.filter_status = tk.StringVar(value="All")
         self.filter_priority = tk.StringVar(value="All")
@@ -37,7 +36,6 @@ class CasesView(ctk.CTkFrame):
         self._build()
 
     def _build(self) -> None:
-        # Header
         header = SectionHeader(
             self,
             title="Cases",
@@ -47,7 +45,6 @@ class CasesView(ctk.CTkFrame):
         )
         header.pack(fill="x", padx=14, pady=(14, 10))
 
-        # Search bar row
         bar = ctk.CTkFrame(self, corner_radius=14)
         bar.pack(fill="x", padx=14, pady=(0, 10))
 
@@ -64,7 +61,6 @@ class CasesView(ctk.CTkFrame):
             side="left", padx=(0, 12), pady=12
         )
 
-        # Filters + sort
         row = ctk.CTkFrame(self, corner_radius=14)
         row.pack(fill="x", padx=14, pady=(0, 10))
 
@@ -79,10 +75,8 @@ class CasesView(ctk.CTkFrame):
         dd(row, "Status", self.filter_status, ["All", *VALID_STATUSES])
         dd(row, "Priority", self.filter_priority, ["All", *VALID_PRIORITIES])
         dd(row, "Case Type", self.filter_type, ["All", *VALID_CASE_TYPES])
-
         self.worker_menu = dd(row, "Worker", self.filter_worker, ["All"], width=170)
 
-        # Sort box (right aligned)
         sort_box = ctk.CTkFrame(row, corner_radius=12)
         sort_box.pack(side="right", padx=10, pady=10)
         ctk.CTkLabel(sort_box, text="Sort", font=font_body()).pack(anchor="w", padx=10, pady=(8, 2))
@@ -97,7 +91,6 @@ class CasesView(ctk.CTkFrame):
             padx=10, pady=(0, 10)
         )
 
-        # Table wrapper
         wrap = ctk.CTkFrame(self, corner_radius=14)
         wrap.pack(fill="both", expand=True, padx=14, pady=(0, 10))
 
@@ -123,7 +116,6 @@ class CasesView(ctk.CTkFrame):
         self.tree.bind("<<TreeviewSelect>>", self._on_select)
         self.tree.bind("<Double-1>", lambda _e: self._open_details())
 
-        # Actions
         actions = ctk.CTkFrame(self, corner_radius=14)
         actions.pack(fill="x", padx=14, pady=(0, 14))
 
@@ -136,10 +128,8 @@ class CasesView(ctk.CTkFrame):
             side="right", padx=12, pady=12
         )
 
-        # First load
         self.refresh()
 
-    # ----- public hooks -----
     def on_show(self) -> None:
         self.refresh()
 
@@ -163,17 +153,24 @@ class CasesView(ctk.CTkFrame):
             descending=bool(self.sort_desc.get()),
         )
 
-        # clear table
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-        # insert
         for c in sorted_cases:
             self.tree.insert(
                 "",
                 "end",
-                values=(c.case_id, c.survivor_name, c.phone, c.case_type, c.priority, c.status,
-                        c.assigned_worker, c.incident_date, c.created_at),
+                values=(
+                    c.case_id,
+                    c.survivor_name,
+                    c.phone,
+                    c.case_type,
+                    c.priority,
+                    c.status,
+                    c.assigned_worker,
+                    c.incident_date,
+                    c.created_at,
+                ),
             )
 
         self.app.status.set_left(f"Cases: {len(sorted_cases)} shown / {len(self.app.manager.cases)} total")
@@ -182,7 +179,6 @@ class CasesView(ctk.CTkFrame):
         self.search_entry.focus_set()
         self.search_entry.select_range(0, "end")
 
-    # ----- helpers -----
     def _refresh_worker_values(self) -> None:
         workers = self.app.manager.unique_workers()
         values = ["All", *workers] if workers else ["All"]
@@ -211,6 +207,9 @@ class CasesView(ctk.CTkFrame):
 
     def _new_case(self) -> None:
         self.app.set_selected_case(None)
+        form_view = self.app.views.get("form")
+        if form_view and hasattr(form_view, "_reset"):
+            form_view._reset()
         self.app.show_view("form")
 
     def _edit_selected(self) -> None:
@@ -230,6 +229,7 @@ class CasesView(ctk.CTkFrame):
         if cid is None:
             messagebox.showinfo("No selection", "Please select a case first.")
             return
+
         case = self.app.manager.get_by_id(cid)
         if not case:
             messagebox.showerror("Not found", "Selected case no longer exists.")

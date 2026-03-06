@@ -15,7 +15,7 @@ class CaseFormView(ctk.CTkFrame):
     Add/Edit form.
     - If app.selected_case_id is None -> Add mode
     - Else -> Edit mode
-    - Bottom action buttons stay visible
+    - New Case always opens empty form
     """
 
     def __init__(self, master, app, **kwargs):
@@ -46,13 +46,11 @@ class CaseFormView(ctk.CTkFrame):
         )
         self.header.grid(row=0, column=0, sticky="ew", padx=14, pady=(14, 10))
 
-        # Main body
         body = ctk.CTkFrame(self, corner_radius=14)
         body.grid(row=1, column=0, sticky="nsew", padx=14, pady=(0, 14))
         body.grid_rowconfigure(0, weight=1)
         body.grid_columnconfigure(0, weight=1)
 
-        # Form area
         form = ctk.CTkFrame(body, corner_radius=14)
         form.grid(row=0, column=0, sticky="nsew", padx=14, pady=(14, 10))
         form.grid_columnconfigure(0, weight=1)
@@ -101,7 +99,6 @@ class CaseFormView(ctk.CTkFrame):
         self.follow_box = ctk.CTkTextbox(form, height=140, corner_radius=10)
         self.follow_box.grid(row=9, column=1, sticky="nsew", padx=12, pady=(0, 12))
 
-        # Fixed bottom button row
         btns = ctk.CTkFrame(body, corner_radius=14)
         btns.grid(row=1, column=0, sticky="ew", padx=14, pady=(0, 14))
 
@@ -114,7 +111,10 @@ class CaseFormView(ctk.CTkFrame):
         self._reset()
 
     def on_show(self) -> None:
-        self._load_selected()
+        if self.app.selected_case_id is None:
+            self._reset()
+        else:
+            self._load_selected()
 
     def _reset(self) -> None:
         self.app.set_selected_case(None)
@@ -133,8 +133,7 @@ class CaseFormView(ctk.CTkFrame):
     def _load_selected(self) -> None:
         cid = self.app.selected_case_id
         if cid is None:
-            self.v_case_id.set("Auto")
-            self.follow_box.delete("1.0", "end")
+            self._reset()
             return
 
         case = self.app.manager.get_by_id(cid)
@@ -152,8 +151,10 @@ class CaseFormView(ctk.CTkFrame):
         self.v_status.set(case.status)
         self.v_worker.set(case.assigned_worker)
         self.v_incident.set(case.incident_date)
+
         self.notes_box.delete("1.0", "end")
         self.notes_box.insert("1.0", case.notes)
+
         self.follow_box.delete("1.0", "end")
         self.app.status.set_left(f"Editing case #{cid}")
 
