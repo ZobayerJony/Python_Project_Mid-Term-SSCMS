@@ -58,3 +58,6 @@ class JsonStore:
     def save_cases(self, next_id: int, cases: List[SurvivorCase]) -> None:
         raw = {"next_id": next_id, "cases": [c.to_dict() for c in cases]}
         self.save_raw(raw)
+
+
+# minor update for git commit
