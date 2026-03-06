@@ -66,7 +66,6 @@ class SSCMSApp:
         self.root.bind("<Control-f>", lambda _e: self._shortcut_focus_search())
         self.root.bind("<F5>", lambda _e: self.refresh_all())
 
-    # ---------------- Layout ----------------
     def _build_shell(self) -> None:
         self.root.grid_columnconfigure(1, weight=1)
         self.root.grid_rowconfigure(0, weight=1)
@@ -125,7 +124,6 @@ class SSCMSApp:
         spacer = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         spacer.grid(row=10, column=0, sticky="nsew")
 
-    # ---------------- Views ----------------
     def _init_views(self) -> None:
         self.views.clear()
         self.views["cases"] = CasesView(self.content, app=self)
@@ -150,7 +148,6 @@ class SSCMSApp:
         if self.status:
             self.status.set_left(f"Viewing: {name.capitalize()}")
 
-    # ---------------- Shared Actions ----------------
     def set_selected_case(self, case_id: int | None) -> None:
         self.selected_case_id = case_id
         if self.status:
@@ -176,7 +173,6 @@ class SSCMSApp:
         if self.status:
             self.status.set_left("New case mode")
 
-    # ---------------- Shortcuts ----------------
     def _shortcut_new_case(self) -> None:
         self._open_new_case_form()
 
