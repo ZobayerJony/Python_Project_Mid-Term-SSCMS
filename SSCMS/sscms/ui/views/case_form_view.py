@@ -214,4 +214,3 @@ class CaseFormView(ctk.CTkFrame):
         self.app.show_view("detail")
 
 
-# minor update for git commit
