@@ -55,3 +55,6 @@ class ExportView(ctk.CTkFrame):
         else:
             messagebox.showerror("Export failed", msg)
             self.app.status.set_left("Export failed")
+
+
+# minor update for git commit
