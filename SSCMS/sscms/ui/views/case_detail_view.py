@@ -209,3 +209,6 @@ class CaseDetailView(ctk.CTkFrame):
         self.follow.delete("1.0", "end")
         self.app.refresh_all()
         self.refresh()
+
+
+# minor update for git commit
