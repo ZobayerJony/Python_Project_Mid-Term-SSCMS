@@ -79,3 +79,6 @@ class StatusBar(ctk.CTkFrame):
 
     def set_right(self, text: str) -> None:
         self.right_var.set(text)
+
+
+# minor update for git commit
