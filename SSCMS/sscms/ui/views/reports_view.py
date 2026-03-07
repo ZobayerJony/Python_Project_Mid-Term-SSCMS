@@ -84,4 +84,3 @@ class ReportsView(ctk.CTkFrame):
         self.app.status.set_left("Reports updated")
 
 
-# minor update for git commit
