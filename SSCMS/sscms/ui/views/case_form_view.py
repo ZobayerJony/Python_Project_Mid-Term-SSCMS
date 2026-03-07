@@ -212,3 +212,6 @@ class CaseFormView(ctk.CTkFrame):
             messagebox.showinfo("No case selected", "Save the case first, then open details.")
             return
         self.app.show_view("detail")
+
+
+# minor update for git commit
