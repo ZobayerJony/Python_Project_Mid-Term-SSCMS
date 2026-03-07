@@ -76,4 +76,3 @@ class SurvivorCase:
             return None
 
 
-# minor update for new git commit
