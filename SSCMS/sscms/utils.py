@@ -30,4 +30,3 @@ def safe_int(value: str) -> Tuple[bool, int]:
         return False, 0
 
 
-# minor update for git commit
