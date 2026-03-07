@@ -28,4 +28,3 @@ def font_mono():
     return ctk.CTkFont(size=12, family="Consolas")
 
 
-# minor update for git commit

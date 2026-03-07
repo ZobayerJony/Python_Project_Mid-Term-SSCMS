@@ -81,4 +81,3 @@ class StatusBar(ctk.CTkFrame):
         self.right_var.set(text)
 
 
-# minor update for git commit

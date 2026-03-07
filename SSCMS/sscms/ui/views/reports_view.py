@@ -82,3 +82,6 @@ class ReportsView(ctk.CTkFrame):
         self.text.delete("1.0", "end")
         self.text.insert("1.0", "\n".join(lines))
         self.app.status.set_left("Reports updated")
+
+
+# minor update for git commit

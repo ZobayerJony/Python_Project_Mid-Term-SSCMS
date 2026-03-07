@@ -188,4 +188,3 @@ class SSCMSApp:
                 self.status.set_left("Search focused")
 
 
-# minor update for git commit
