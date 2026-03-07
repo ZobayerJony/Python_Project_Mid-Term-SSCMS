@@ -211,4 +211,3 @@ class CaseDetailView(ctk.CTkFrame):
         self.refresh()
 
 
-# minor update for git commit
