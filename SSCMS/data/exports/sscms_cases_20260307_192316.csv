@@ -1,0 +1,7 @@
+case_id,survivor_name,phone,case_type,priority,status,assigned_worker,incident_date,created_at,notes,activity_count
+1,Suraiya Akter Mishu,01796383940,Other,Low,Open,ZOBAYER ISLM JONY,2016-11-21,2026-03-06,NONE,2
+2,NAZIFA ANJUM NIHA,01785389538,Psychosocial,High,Open,RAFI,2015-11-12,2026-03-06,,1
+3,Tusher Biswas,01796568952,Legal,Urgent,Open,Zobayer,2026-03-01,2026-03-06,Roomate use sliper Shoe in Room,2
+4,Mohitun Begum,01789562356,Protection,High,In Progress,Ragib Islam,2026-03-06,2026-03-06,,3
+5,Rimu,01789562356,Medical,High,Resolved,Nahid,2026-01-25,2026-03-06,,3
+6,Monika Akter,01798562359,Medical,Medium,Open,Zobayer,2020-08-12,2026-03-07,,1
