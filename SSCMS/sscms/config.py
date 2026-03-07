@@ -19,4 +19,3 @@ MIN_SIZE = (1100, 650)
 ADMIN_USERNAME = "Zobayer"
 ADMIN_PASSWORD = "zobayer1234"
 
-# minor update for repository tracking
