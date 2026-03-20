@@ -1,5 +1,5 @@
 {
-  "next_id": 7,
+  "next_id": 8,
   "cases": [
     {
       "case_id": 1,
@@ -142,6 +142,25 @@
           "timestamp": "2026-03-07 16:12",
           "action": "Created",
           "detail": "Case created with status 'Open' and priority 'Medium'."
+        }
+      ]
+    },
+    {
+      "case_id": 7,
+      "survivor_name": "Shams",
+      "phone": "01796353940",
+      "case_type": "Medical",
+      "priority": "High",
+      "status": "Open",
+      "assigned_worker": "Zobayer",
+      "incident_date": "2020-12-05",
+      "created_at": "2026-03-08",
+      "notes": "",
+      "activities": [
+        {
+          "timestamp": "2026-03-08 10:33",
+          "action": "Created",
+          "detail": "Case created with status 'Open' and priority 'High'."
         }
       ]
     }
